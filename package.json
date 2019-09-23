@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "code server for </module/Whom>",
   "scripts": {
-    "listen": "npx forever start index.js"
+    "listen": "npx forever start index.js",
+    "join-test": "node index.js"
   },
   "main": "index.js",
   "repository": "https://github.com/nasustim/code-server-module-whom.git",

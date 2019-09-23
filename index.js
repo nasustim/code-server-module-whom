@@ -14,10 +14,9 @@ let devices = []
 let connects = []
 
 app.get('/start',function (req, res) {
-  stepExec = generator()
+  stepExec = generator('2019-yobishin1')
   stepExec.next()
   res.send('ok')
-
 })
 app.get('/restart',function (req, res) {
   step = 0
@@ -28,7 +27,25 @@ app.get('/restart',function (req, res) {
       signal: 2
     }))
   })
-  stepExec = generator()
+  stepExec = generator('2019-yobishin1')
+  stepExec.next()
+  res.send('restart ok')
+})
+app.get('/test-start',function (req, res) {
+  stepExec = generator('test01')
+  stepExec.next()
+  res.send('ok')
+})
+app.get('/test-restart',function (req, res) {
+  step = 0
+  experienceStep = 0
+  connects.forEach(socket => {
+    console.log('test loop')
+    socket.send(JSON.stringify({
+      signal: 2
+    }))
+  })
+  stepExec = generator('test01')
   stepExec.next()
   res.send('restart ok')
 })
@@ -52,9 +69,9 @@ const keepAlive = setInterval(function () {
 }, 3000)
 
 // signal 2: all clear, 3: control
-function * generator () {
+function * generator (dir) {
   while(true){
-    let setting = JSON.parse(fs.readFileSync('timeline.json'))
+    let setting = JSON.parse(fs.readFileSync(`./${dir}/timeline.json`))
     connects.forEach(socket => {
       console.log(setting[step])
       socket.send(JSON.stringify(setting[step]))
@@ -100,7 +117,7 @@ app.ws('/', function (ws, req) {
         stepExec.next()
         break
       case 2:
-        let experienceSetting = JSON.parse(fs.readFileSync('./changeExperience.json'))
+        let experienceSetting = JSON.parse(fs.readFileSync('./2019-yobishin1/changeExperience.json'))
         console.log(`movie stepper signal: ${payload.movieId}`)
         connects.forEach(socket => {
           socket.send(JSON.stringify(experienceSetting[experienceStep]))
