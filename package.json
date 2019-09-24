@@ -4,6 +4,8 @@
   "description": "code server for </module/Whom>",
   "scripts": {
     "listen": "npx forever start index.js",
+    "log": "npx forever logs index.js",
+    "stop": "npx forever stop index.js",
     "join-test": "node index.js"
   },
   "main": "index.js",

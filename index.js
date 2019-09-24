@@ -14,7 +14,7 @@ let devices = []
 let connects = []
 
 app.get('/start',function (req, res) {
-  stepExec = generator('2019-yobishin1')
+  stepExec = generator('archive-20190924')
   stepExec.next()
   res.send('ok')
 })
@@ -27,7 +27,7 @@ app.get('/restart',function (req, res) {
       signal: 2
     }))
   })
-  stepExec = generator('2019-yobishin1')
+  stepExec = generator('archive-20190924')
   stepExec.next()
   res.send('restart ok')
 })
@@ -72,8 +72,8 @@ const keepAlive = setInterval(function () {
 function * generator (dir) {
   while(true){
     let setting = JSON.parse(fs.readFileSync(`./${dir}/timeline.json`))
+    console.log(setting[step])
     connects.forEach(socket => {
-      console.log(setting[step])
       socket.send(JSON.stringify(setting[step]))
     })
     yield setting[step].signal
@@ -81,8 +81,8 @@ function * generator (dir) {
     if(!(step < setting.length)){
       step = 0
       experienceStep = 0
+      console.log('loop')
       connects.forEach(socket => {
-        console.log('loop')
         socket.send(JSON.stringify({
           signal: 2
         }))
@@ -136,7 +136,7 @@ app.ws('/', function (ws, req) {
   ws.on('error', close)
 })
 
-app.listen(3001)
+app.listen(3003)
 
 function close (msg) {
   console.log(msg)
