@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "description": "code server for </module/Whom>",
   "scripts": {
-    "listen": "npx forever start index.js",
-    "log": "npx forever logs index.js",
-    "stop": "npx forever stop index.js",
-    "join-test": "node index.js"
+    "listen": "npx forever start dst/index.js",
+    "log": "npx forever logs dst/index.js",
+    "stop": "npx forever stop dst/index.js",
+    "build": "npx tsc",
+    "watch": "npx ts-node src/index.ts",
+    "test": "jest"
   },
-  "main": "index.js",
+  "main": "dst/index.js",
   "repository": "https://github.com/nasustim/code-server-module-whom.git",
   "author": "nasustim <hibino17@iamas.ac.jp>",
   "license": "MIT",
@@ -17,5 +19,12 @@
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
     "forever": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "@types/express-ws": "^3.0.0",
+    "@types/node": "^12.11.5",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
   }
 }

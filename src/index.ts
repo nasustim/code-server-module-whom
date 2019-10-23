@@ -1,10 +1,12 @@
-const _express = require('express')
-const app = _express()
-const _ws = require('express-ws')(app)
+import express from 'express'
+import expressWs from 'express-ws'
+
+import fs from  'fs'
+
+const app = express()
+const ws = expressWs(app
 
 // 0: pause, 1: step
-const fs = require('fs')
-
 let step = 0
 let stepExec
 
@@ -14,7 +16,7 @@ let devices = []
 let connects = []
 
 app.get('/start',function (req, res) {
-  stepExec = generator('archive-20190924')
+  stepExec = generator('2019-yobishin1')
   stepExec.next()
   res.send('ok')
 })
@@ -27,7 +29,7 @@ app.get('/restart',function (req, res) {
       signal: 2
     }))
   })
-  stepExec = generator('archive-20190924')
+  stepExec = generator('2019-yobishin1')
   stepExec.next()
   res.send('restart ok')
 })
@@ -71,7 +73,7 @@ const keepAlive = setInterval(function () {
 // signal 2: all clear, 3: control
 function * generator (dir) {
   while(true){
-    let setting = JSON.parse(fs.readFileSync(`./${dir}/timeline.json`))
+    let setting = JSON.parse(fs.readFileSync(`../${dir}/timeline.json`))
     console.log(setting[step])
     connects.forEach(socket => {
       socket.send(JSON.stringify(setting[step]))
@@ -117,7 +119,7 @@ app.ws('/', function (ws, req) {
         stepExec.next()
         break
       case 2:
-        let experienceSetting = JSON.parse(fs.readFileSync('./2019-yobishin1/changeExperience.json'))
+        let experienceSetting = JSON.parse(fs.readFileSync('../2019-yobishin1/changeExperience.json'))
         console.log(`movie stepper signal: ${payload.movieId}`)
         connects.forEach(socket => {
           socket.send(JSON.stringify(experienceSetting[experienceStep]))
