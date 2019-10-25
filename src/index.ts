@@ -1,39 +1,70 @@
-import express from 'express'
-import expressWs from 'express-ws'
+/// <reference path="./types/index.d.ts" />
+
+import {createServer as _createHttpServer} from 'http'
+import {server as _webSocketServer} from 'websocket'
 
 import fs from  'fs'
 
-const app = express()
-const ws = expressWs(app
+import {remoteAddrToMovieId} from './resolver'
+import {log} from './util'
+
+var connectedDevices: ConnectedDevices = new Array()
+
+const HttpServer = _createHttpServer((request, response) => {
+  log(`Request to: ${request.url}.`)
+  switch (request.url) {
+    case '/start':
+      start()
+      response.write('start ok')
+      break
+    case '/restart':
+      restart()
+      response.write('restart ok')
+      break
+    default:
+      console.warn(`Recieve Request to Undefined URI: ${request.url}`)
+      response.writeHead(404)
+      break
+  }
+  response.end()
+})
+
+HttpServer.listen(3003, () => {
+  log(`Listen in 3003 Port...`)
+})
+
+const WebSocketServer = new _webSocketServer({
+  httpServer: HttpServer,
+  autoAcceptConnections: true // key of allow cross-origin-request
+})
 
 // 0: pause, 1: step
-let step = 0
-let stepExec
+var step = 0
+var stepExec: Generator<string, void, number>
 
-let experienceStep = 0
+var experienceStep = 0
 
-let devices = []
-let connects = []
-
-app.get('/start',function (req, res) {
+function start () {
+  log(`Start steps.`)
   stepExec = generator('2019-yobishin1')
   stepExec.next()
-  res.send('ok')
-})
-app.get('/restart',function (req, res) {
+}
+
+function restart () {
+  log(`Restart steps.`)
   step = 0
   experienceStep = 0
-  connects.forEach(socket => {
-    console.log('loop')
-    socket.send(JSON.stringify({
+  WebSocketServer.connections.forEach(connection => {
+    log('loop')
+    connection.send(JSON.stringify({
       signal: 2
     }))
   })
   stepExec = generator('2019-yobishin1')
   stepExec.next()
-  res.send('restart ok')
-})
-app.get('/test-start',function (req, res) {
+}
+
+/*app.get('/test-start',function (req, res) {
   stepExec = generator('test01')
   stepExec.next()
   res.send('ok')
@@ -50,20 +81,11 @@ app.get('/test-restart',function (req, res) {
   stepExec = generator('test01')
   stepExec.next()
   res.send('restart ok')
-})
-
-const liveCheck = setInterval(() => {
-  connects = connects.filter(socket => {
-    if(socket.readyState != socket.OPEN)
-      return false
-    else
-      return true
-  })
-},1000)
+})*/
 
 const keepAlive = setInterval(function () {
-  connects.forEach(socket => {
-    socket.send(JSON.stringify({
+  WebSocketServer.connections.forEach(connection => {
+    connection.send(JSON.stringify({
       signal: 30,
       movieId: '30'
     }))
@@ -71,24 +93,24 @@ const keepAlive = setInterval(function () {
 }, 3000)
 
 // signal 2: all clear, 3: control
-function * generator (dir) {
+function * generator (dir: string) {
   while(true){
-    let setting = JSON.parse(fs.readFileSync(`../${dir}/timeline.json`))
-    console.log(setting[step])
-    connects.forEach(socket => {
-      socket.send(JSON.stringify(setting[step]))
+    let setting = JSON.parse(fs.readFileSync(`../${dir}/timeline.json`).toString())
+    log(setting[step])
+    WebSocketServer.connections.forEach(connection => {
+      connection.send(JSON.stringify(setting[step]))
     })
     yield setting[step].signal
     step++
     if(!(step < setting.length)){
       step = 0
       experienceStep = 0
-      console.log('loop')
-      connects.forEach(socket => {
-        socket.send(JSON.stringify({
+      log('loop')
+      WebSocketServer.connections.forEach(connection => {
+        connection.send(JSON.stringify({
           signal: 2
         }))
-        socket.send(JSON.stringify({
+        connection.send(JSON.stringify({
           movieId: '9',
           command: 0, // 0: display all, 1: search
           rule: ' true ', // search rule
@@ -99,32 +121,40 @@ function * generator (dir) {
   }
 }
 
-app.ws('/', function (ws, req) {
+WebSocketServer.on('request', function (request) {
 
-  connects.push(ws)
+  const connection = request.accept()
 
-  ws.on('message', function (msg) {
-    const payload = JSON.parse(msg)
-
-    console.log(payload)
-
+  connection.on('message', function (msg) {
+    const payload = (msg.type === 'utf8')
+      ? JSON.parse(msg.utf8Data as string)
+      : msg.binaryData as Buffer
+    log(payload)
     // 0: set device, 1: stopTiming, 2: markTiming
     switch(payload.signal) {
-      case 0: 
-        console.log(`set device: ${payload.movieId}`)
-        devices.push(payload.movieId)
+      case 0:
+        connectedDevices.push({
+          movieId: payload.movieId,
+          addr: connection.socket.remoteAddress
+        })
+        connection.socket.remoteAddress
+        log(
+          `set device: \\
+            movieId=${payload.movieId}, \\
+            IpAddress=${connection.socket.remoteAddress}`
+        )
         break
       case 1:
-        console.log(`movie stop signal: ${payload.movieId}`)
+        log(`movie stop: movieId=${payload.movieId} is stop.`)
         stepExec.next()
         break
       case 2:
-        let experienceSetting = JSON.parse(fs.readFileSync('../2019-yobishin1/changeExperience.json'))
-        console.log(`movie stepper signal: ${payload.movieId}`)
-        connects.forEach(socket => {
-          socket.send(JSON.stringify(experienceSetting[experienceStep]))
+        let experienceSetting = JSON.parse(fs.readFileSync('../2019-yobishin1/changeExperience.json').toString())
+        log(`experience filtering: movieId=${payload.movieId}`)
+        WebSocketServer.connections.forEach(connection => {
+          connection.send(JSON.stringify(experienceSetting[experienceStep]))
         })
-        console.log(experienceSetting[experienceStep])
+        log(experienceSetting[experienceStep])
         experienceStep++
         if(experienceStep >= experienceSetting.length)
           experienceStep = 0
@@ -132,14 +162,8 @@ app.ws('/', function (ws, req) {
         break
     }
 
-    console.log(`movies: ${devices}`)
+    log(`Connecting Device List: ${WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices))}`)
   })
-  ws.on('close', close)
-  ws.on('error', close)
+  connection.on('close', close)
+  connection.on('error', close)
 })
-
-app.listen(3003)
-
-function close (msg) {
-  console.log(msg)
-}
