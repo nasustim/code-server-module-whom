@@ -37,10 +37,12 @@ const HttpServer = _createHttpServer((request, response) => {
       start(test)
       status = test
       response.write('test start ok')
+      break
     case '/test-restart':
       restart(test)
       status = test
       response.write('test start ok')
+      break
     default:
       warn(`Recieve Request to Undefined URI: ${request.url}`)
       response.writeHead(404)
@@ -55,6 +57,7 @@ HttpServer.listen(3003, () => {
 
 const WebSocketServer = new _webSocketServer({
   httpServer: HttpServer,
+  disableNagleAlgorithm: true,
   autoAcceptConnections: true // key of allow cross-origin-request
 })
 
@@ -74,6 +77,7 @@ const keepAlive = setInterval(function () {
 }, 3000)
 
 WebSocketServer.on('request', function (request) {
+  console.log("debug", JSON.stringify(request))
   const connection = request.accept()
   connection.on('message', function (msg) {
     const payload = (msg.type === 'utf8')
@@ -99,7 +103,7 @@ WebSocketServer.on('request', function (request) {
         stepExec.next()
         break
       case 2:
-        let experienceSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', prod, 'changeExperience.json')).toString())
+        let experienceSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', status, 'changeExperience.json')).toString())
         log(`experience filtering: movieId=${payload.movieId}`)
         WebSocketServer.connections.forEach(connection => {
           connection.send(JSON.stringify(experienceSetting[experienceStep]))
