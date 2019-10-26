@@ -60,5 +60,6 @@ typings/
 # next.js build output
 .next
 
-
+# Useful
 .DS_Store
+yarn.lock
