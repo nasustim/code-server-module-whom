@@ -7,7 +7,7 @@
     "log": "npx forever logs dst/index.js",
     "stop": "npx forever stop dst/index.js",
     "build": "npx tsc",
-    "watch": "npx ts-node src/index.ts",
+    "start": "npx ts-node src/index.ts",
     "test": "jest"
   },
   "main": "dst/index.js",

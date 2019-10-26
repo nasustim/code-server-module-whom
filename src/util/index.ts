@@ -1,13 +1,12 @@
 /// <reference path="../types/index.d.ts" />
 
 export function log (msg: DisplayableData) {
-  msg = typeof msg === 'object' ? JSON.stringify(msg) : msg
-  console.log(setTimeStamp(msg))
-}
-
-export function warn (msg :DisplayableData) {
-  msg = typeof msg === 'object' ? JSON.stringify(msg) : msg
-  console.warn(setTimeStamp(msg))
+  if(typeof msg === "object"){
+    console.log(setTimeStamp('↓↓ variable dump ↓↓'))
+    console.dir(msg)
+  }else{
+    console.log(setTimeStamp(msg))
+  }
 }
 
 export const setTimeStamp = (msg: DisplayableData): string => {

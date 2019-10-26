@@ -7,7 +7,7 @@ import fs from  'fs'
 import {resolve} from 'path'
 
 import {remoteAddrToMovieId} from './resolver'
-import {log, warn} from './util'
+import {log} from './util'
 import * as websocketHandler from './handler/websocket'
 
 import {test, prod} from './setting'
@@ -44,7 +44,7 @@ const HttpServer = _createHttpServer((request, response) => {
       response.write('test start ok')
       break
     default:
-      warn(`Recieve Request to Undefined URI: ${request.url}`)
+      log(`Recieve Request to Undefined URI: ${request.url}`)
       response.writeHead(404)
       break
   }
@@ -58,7 +58,7 @@ HttpServer.listen(3003, () => {
 const WebSocketServer = new _webSocketServer({
   httpServer: HttpServer,
   disableNagleAlgorithm: true,
-  autoAcceptConnections: true // key of allow cross-origin-request
+  autoAcceptConnections: false
 })
 
 // 0: pause, 1: step
@@ -77,7 +77,6 @@ const keepAlive = setInterval(function () {
 }, 3000)
 
 WebSocketServer.on('request', function (request) {
-  console.log("debug", JSON.stringify(request))
   const connection = request.accept()
   connection.on('message', function (msg) {
     const payload = (msg.type === 'utf8')
@@ -116,7 +115,8 @@ WebSocketServer.on('request', function (request) {
         break
     }
 
-    log(`Connecting Device List: ${WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices))}`)
+    log(`Connecting Device List`)
+    log(WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)))
   })
   connection.on('close', websocketHandler.close)
   connection.on('error', websocketHandler.error)
