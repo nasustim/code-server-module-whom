@@ -14,10 +14,6 @@ import {test, prod} from './setting'
 
 var connectedDevices: ConnectedDevices = new Array()
 
-console.log('######################################')
-console.log('### start http and websocket serve ###')
-console.log('######################################\n')
-
 let status: string
 
 const HttpServer = _createHttpServer((request, response) => {
@@ -50,6 +46,10 @@ const HttpServer = _createHttpServer((request, response) => {
   }
   response.end()
 })
+
+console.log('######################################')
+console.log('### start http and websocket serve ###')
+console.log('######################################\n')
 
 HttpServer.listen(3003, () => {
   log(`Listen in 3003 Port...`)
