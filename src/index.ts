@@ -39,6 +39,18 @@ const HttpServer = _createHttpServer((request, response) => {
       status = test
       response.write('test start ok')
       break
+    case '/connection-list':
+      log(`Connecting Device List`)
+      log(WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)))
+      response.write(
+        `connection list
+        ${
+          WebSocketServer.connections.map(con => 
+            remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)
+          )
+        }`
+      )
+      break
     default:
       log(`Recieve Request to Undefined URI: ${request.url}`)
       response.writeHead(404)
@@ -119,7 +131,6 @@ WebSocketServer.on('request', function (request) {
     log(WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)))
   })
   connection.on('close', websocketHandler.close)
-  connection.on('error', websocketHandler.error)
 })
 
 // signal 2: all clear, 3: control
