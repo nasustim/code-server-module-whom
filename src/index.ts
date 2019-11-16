@@ -15,29 +15,34 @@ import {test, prod} from './setting'
 var connectedDevices: ConnectedDevices = new Array()
 
 let status: string
+var isPlayable: boolean = true
 
 const HttpServer = _createHttpServer((request, response) => {
   log(`Request to: ${request.url}.`)
   switch (request.url) {
     case '/start':
+      isPlayable = true
       start(prod)
       status = prod
       response.write('start ok')
       break
     case '/restart':
+      isPlayable = true
       restart(prod)
       status = prod
       response.write('restart ok')
       break
     case '/test-start':
+      isPlayable = true
       start(test)
       status = test
       response.write('test start ok')
       break
     case '/test-restart':
+      isPlayable = true
       restart(test)
       status = test
-      response.write('test start ok')
+      response.write('test restart ok')
       break
     case '/connection-list':
       log(`Connecting Device List`)
@@ -50,6 +55,11 @@ const HttpServer = _createHttpServer((request, response) => {
           )
         }`
       )
+      break
+    case '/step-stop':
+      log(`Step stop`)
+      isPlayable = false
+      response.write(`step stop ok`)
       break
     default:
       log(`Recieve Request to Undefined URI: ${request.url}`)
@@ -95,6 +105,10 @@ WebSocketServer.on('request', function (request) {
       ? JSON.parse(msg.utf8Data as string)
       : msg.binaryData as Buffer
     log(payload)
+
+    // swicthの中身をモジュールにして、isPlayable === trueにするトリガで再生開始したい
+    if(isPlayable === false) return
+
     // 0: set device, 1: stopTiming, 2: markTiming
     switch(payload.signal) {
       case 0:
@@ -102,7 +116,6 @@ WebSocketServer.on('request', function (request) {
           movieId: payload.movieId,
           addr: connection.socket.remoteAddress
         })
-        connection.socket.remoteAddress
         log(
           `set device: \\
             movieId=${payload.movieId}, \\
