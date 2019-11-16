@@ -32,7 +32,7 @@ const HttpServer = _createHttpServer((request, response) => {
         param: v.split('=')[0],
         val: v.split('=')[1]
       }
-    }) : []
+    }) : [] 
 
   switch (path) {
     case '/start':
@@ -80,8 +80,8 @@ const HttpServer = _createHttpServer((request, response) => {
 
       isPlayable = false
 
-      let nextSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', prod, 'timeline.json')).toString())[step-1]
-      if(nextSetting.signal)
+      let nextSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', status == test ? test : prod, 'timeline.json')).toString())[step-1]
+      if(nextSetting.signal == "2") // 多分違う
         experienceStep++
     
       response.write(`step stop ok`)
@@ -96,6 +96,17 @@ const HttpServer = _createHttpServer((request, response) => {
       log(`param set`)
       if(params.length !== 0){}
       response.write(`param set ok`)
+      break
+    case '/reborn':
+      log(`復活`)
+      stepExec.next()
+      response.write(`復活 ok`)
+      break
+    case '/recovery':
+      log(`再復活`)
+      step = step - 1 < -1 ? -1 : step - 1
+      stepExec.next()
+      response.write(`再復活 ok`)
       break
     default:
       log(`Recieve Request to Undefined URI: ${request.url}`)

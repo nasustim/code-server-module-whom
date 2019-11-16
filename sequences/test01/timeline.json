@@ -2,21 +2,21 @@
   {
     "movieId": "5",
     "signal": 0,
-    "time": 15
+    "time": 10
   },
   {
     "movieId": "6",
     "signal": 0,
-    "time": 15
+    "time": 10
   },
   {
     "movieId": "5",
     "signal": 0,
-    "time": 30
+    "time": 20
   },
   {
     "movieId": "6",
     "signal": 0,
-    "time": 30
+    "time": 20
   }
 ]
