@@ -1,7 +1,7 @@
 /// <reference path="./types/index.d.ts" />
 
 import {createServer as _createHttpServer} from 'http'
-import {server as _webSocketServer, connection} from 'websocket'
+import {server as _webSocketServer} from 'websocket'
 
 import fs from  'fs'
 import {resolve} from 'path'
@@ -74,6 +74,8 @@ const HttpServer = _createHttpServer((request, response) => {
     case '/step-stop':
       log(`Step stop`)
       if(isPlayable === false)
+        break
+      if(step-1 < 0)
         break
 
       isPlayable = false

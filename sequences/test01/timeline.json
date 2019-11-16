@@ -3,5 +3,20 @@
     "movieId": "5",
     "signal": 0,
     "time": 15
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 15
+  },
+  {
+    "movieId": "5",
+    "signal": 0,
+    "time": 30
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 30
   }
 ]
