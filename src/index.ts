@@ -1,7 +1,7 @@
 /// <reference path="./types/index.d.ts" />
 
 import {createServer as _createHttpServer} from 'http'
-import {server as _webSocketServer} from 'websocket'
+import {server as _webSocketServer, connection} from 'websocket'
 
 import fs from  'fs'
 import {resolve} from 'path'
@@ -17,9 +17,24 @@ var connectedDevices: ConnectedDevices = new Array()
 let status: string
 var isPlayable: boolean = true
 
+// 0: pause, 1: step
+var step = 0
+var experienceStep = 0
+
 const HttpServer = _createHttpServer((request, response) => {
   log(`Request to: ${request.url}.`)
-  switch (request.url) {
+  const path = (request.url as string).split('?')[0]
+
+  const params = (request.url as string).split('?').length >= 2? (request.url as string).split('?')[1]
+    .split('&')
+    .map(v => {
+      return {
+        param: v.split('=')[0],
+        val: v.split('=')[1]
+      }
+    }) : []
+
+  switch (path) {
     case '/start':
       isPlayable = true
       start(prod)
@@ -58,8 +73,27 @@ const HttpServer = _createHttpServer((request, response) => {
       break
     case '/step-stop':
       log(`Step stop`)
+      if(isPlayable === false)
+        break
+
       isPlayable = false
+
+      let nextSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', prod, 'timeline.json')).toString())[step-1]
+      if(nextSetting.signal)
+        experienceStep++
+    
       response.write(`step stop ok`)
+      break
+    case '/step-restart':
+      log(`Step restart`)
+      isPlayable = true
+      response.write(`step restart ok`)
+      stepExec.next()
+      break
+    case '/set':
+      log(`param set`)
+      if(params.length !== 0){}
+      response.write(`param set ok`)
       break
     default:
       log(`Recieve Request to Undefined URI: ${request.url}`)
@@ -83,10 +117,6 @@ const WebSocketServer = new _webSocketServer({
   autoAcceptConnections: false
 })
 
-// 0: pause, 1: step
-var step = 0
-var experienceStep = 0
-
 var stepExec: Generator<string, void, number>
 
 const keepAlive = setInterval(function () {
@@ -109,42 +139,47 @@ WebSocketServer.on('request', function (request) {
     // swicthの中身をモジュールにして、isPlayable === trueにするトリガで再生開始したい
     if(isPlayable === false) return
 
-    // 0: set device, 1: stopTiming, 2: markTiming
-    switch(payload.signal) {
-      case 0:
-        connectedDevices.push({
-          movieId: payload.movieId,
-          addr: connection.socket.remoteAddress
-        })
-        log(
-          `set device: \\
-            movieId=${payload.movieId}, \\
-            IpAddress=${connection.socket.remoteAddress}`
-        )
-        break
-      case 1:
-        log(`movie stop: movieId=${payload.movieId} is stop.`)
-        stepExec.next()
-        break
-      case 2:
-        let experienceSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', status, 'changeExperience.json')).toString())
-        log(`experience filtering: movieId=${payload.movieId}`)
-        WebSocketServer.connections.forEach(connection => {
-          connection.send(JSON.stringify(experienceSetting[experienceStep]))
-        })
-        log(experienceSetting[experienceStep])
-        experienceStep++
-        if(experienceStep >= experienceSetting.length)
-          experienceStep = 0
-        stepExec.next()
-        break
-    }
+    restartRecentStep(payload, connection)
 
-    log(`Connecting Device List`)
-    log(WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)))
   })
   connection.on('close', websocketHandler.close)
 })
+
+function restartRecentStep (payload: any, connection?: any) {
+  // 0: set device, 1: stopTiming, 2: markTiming, 3: setTime
+  switch(payload.signal) {
+    case 0:
+      connectedDevices.push({
+        movieId: payload.movieId,
+        addr: connection.socket.remoteAddress
+      })
+      log(
+        `set device: \\
+          movieId=${payload.movieId}, \\
+          IpAddress=${connection.socket.remoteAddress}`
+      )
+      break
+    case 1:
+      log(`movie stop: movieId=${payload.movieId} is stop.`)
+      stepExec.next()
+      break
+    case 2:
+      let experienceSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', status, 'changeExperience.json')).toString())
+      log(`experience filtering: movieId=${payload.movieId}`)
+      WebSocketServer.connections.forEach(connection => {
+        connection.send(JSON.stringify(experienceSetting[experienceStep]))
+      })
+      log(experienceSetting[experienceStep])
+      experienceStep++
+      if(experienceStep >= experienceSetting.length)
+        experienceStep = 0
+      stepExec.next()
+      break
+  }
+
+  log(`Connecting Device List`)
+  log(WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)))
+}
 
 // signal 2: all clear, 3: control
 function * generator (dir: string) {
@@ -155,7 +190,7 @@ function * generator (dir: string) {
       connection.send(JSON.stringify(setting[step]))
     })
     yield setting[step].signal
-    step++
+    step = step + 1
     if(!(step < setting.length)){
       step = 0
       experienceStep = 0
