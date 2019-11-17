@@ -108,6 +108,11 @@ const HttpServer = _createHttpServer((request, response) => {
       stepExec.next()
       response.write(`再復活 ok`)
       break
+    case '/return':
+      log(`原点復帰`)
+      returnStep()
+      response.write(`原点復帰 ok`)
+      break
     default:
       log(`Recieve Request to Undefined URI: ${request.url}`)
       response.writeHead(404)
@@ -248,4 +253,14 @@ function restart (pattern: string) {
   })
   stepExec = generator(pattern)
   stepExec.next()
+}
+
+function returnStep () {
+  step = 0
+  experienceStep = 0
+  WebSocketServer.connections.forEach(connection => {
+    connection.send(JSON.stringify({
+      signal: 2
+    }))
+  })
 }
