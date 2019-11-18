@@ -9,17 +9,18 @@
   },
   {
     "movieId": "9",
+    "command": 0, 
+    "rule": {
+      "誰が": "*"
+    },
+    "signal": 3
+  },
+  {
+    "movieId": "9",
     "command": 1,
     "rule": {
       "誰が": "わたし",
       "誰に": "プログラム"
-    },
-    "signal": 3
-  },{
-    "movieId": "9",
-    "command": 0, 
-    "rule": {
-      "誰が": "*"
     },
     "signal": 3
   },
@@ -103,32 +104,6 @@
       "何をした": ["不祥事", "公約違反", "悪化"]
     },
     "signal": 3
-  },
-
-  {
-    "movieId": "9",
-    "command": 0, 
-    "rule": {
-      "誰が": "*"
-    },
-    "signal": 3
-  },
-
-  {
-    "movieId": "9",
-    "command": 0, 
-    "rule": {
-      "誰が": "*"
-    },
-    "signal": 3
-  },
-
-  {
-    "movieId": "9",
-    "command": 0, 
-    "rule": {
-      "誰が": "*"
-    },
-    "signal": 3
   }
+
 ]

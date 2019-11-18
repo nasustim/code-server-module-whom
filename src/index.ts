@@ -217,12 +217,12 @@ function * generator (dir: string) {
         connection.send(JSON.stringify({
           signal: 2
         }))
-        connection.send(JSON.stringify({
+        /*connection.send(JSON.stringify({
           movieId: '9',
           command: 0, // 0: display all, 1: search
-          rule: ' true ', // search rule
+          rule: {}, // search rule
           signal: 3
-        }))
+        }))*/
       })
     }
   }

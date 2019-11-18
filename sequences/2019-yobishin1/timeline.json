@@ -17,7 +17,7 @@
   {
     "movieId": "5",
     "signal": 0,
-    "time": 66
+    "time": 75
   },
   {
     "movieId": "6",
@@ -32,7 +32,7 @@
   {
     "movieId": "6",
     "signal": 0,
-    "time": 335
+    "time": 336
   },
   {
     "movieId": "0",
@@ -138,6 +138,11 @@
     "movieId": "3",
     "signal": 0,
     "time": 268
+  },
+  {
+    "movieId": "1",
+    "signal": 1,
+    "time": 5
   },
   {
     "movieId": "1",
