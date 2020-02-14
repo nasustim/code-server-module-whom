@@ -8,11 +8,11 @@
     "stop": "npx forever stop dst/index.js",
     "build": "npx tsc",
     "start": "npx ts-node src/index.ts",
-    "test": "jest"
+    "test": "npx tsc && exit 0"
   },
   "main": "dst/index.js",
   "repository": "https://github.com/nasustim/code-server-module-whom.git",
-  "author": "nasustim <hibino17@iamas.ac.jp>",
+  "author": "Mitsuhiro Hibino <hibino17@iamas.ac.jp>",
   "license": "MIT",
   "private": true,
   "dependencies": {

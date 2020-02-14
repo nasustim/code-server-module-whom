@@ -62,5 +62,4 @@ typings/
 
 # Useful
 .DS_Store
-yarn.lock
-dst/*
+dst
