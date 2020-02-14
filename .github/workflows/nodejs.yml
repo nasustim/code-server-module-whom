@@ -19,10 +19,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Start-Up Test
       run: |
-#        echo "finish test"
         yarn --frozen-lockfile --ignore-optional
         yarn test
-#        yarn listen
-#        npm test
       env:
         CI: true
