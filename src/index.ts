@@ -217,12 +217,6 @@ function * generator (dir: string) {
         connection.send(JSON.stringify({
           signal: 2
         }))
-        /*connection.send(JSON.stringify({
-          movieId: '9',
-          command: 0, // 0: display all, 1: search
-          rule: {}, // search rule
-          signal: 3
-        }))*/
       })
     }
   }
@@ -237,6 +231,7 @@ function start (pattern: string) {
   stepExec = generator(pattern)
   stepExec.next()
 }
+
 /**
  * restart sequence
  * @param pattern 
