@@ -132,19 +132,21 @@ HttpServer.listen(3003, () => {
 const WebSocketServer = new _webSocketServer({
   httpServer: HttpServer,
   disableNagleAlgorithm: true,
-  autoAcceptConnections: false
+  autoAcceptConnections: false,
+  closeTimeout: 3500,
+  keepaliveInterval: 7500,
 })
 
 var stepExec: Generator<string, void, number>
 
-const keepAlive = setInterval(function () {
+/*const keepAlive = setInterval(function () {
   WebSocketServer.connections.forEach(connection => {
     connection.send(JSON.stringify({
       signal: 30,
       movieId: '30'
     }))
   })
-}, 3000)
+}, 3000)*/
 
 WebSocketServer.on('request', function (request) {
   const connection = request.accept()
