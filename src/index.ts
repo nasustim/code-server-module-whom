@@ -132,19 +132,21 @@ HttpServer.listen(3003, () => {
 const WebSocketServer = new _webSocketServer({
   httpServer: HttpServer,
   disableNagleAlgorithm: true,
-  autoAcceptConnections: false
+  autoAcceptConnections: false,
+  closeTimeout: 3500,
+  keepaliveInterval: 7500,
 })
 
 var stepExec: Generator<string, void, number>
 
-const keepAlive = setInterval(function () {
+/*const keepAlive = setInterval(function () {
   WebSocketServer.connections.forEach(connection => {
     connection.send(JSON.stringify({
       signal: 30,
       movieId: '30'
     }))
   })
-}, 3000)
+}, 3000)*/
 
 WebSocketServer.on('request', function (request) {
   const connection = request.accept()
@@ -217,12 +219,6 @@ function * generator (dir: string) {
         connection.send(JSON.stringify({
           signal: 2
         }))
-        /*connection.send(JSON.stringify({
-          movieId: '9',
-          command: 0, // 0: display all, 1: search
-          rule: {}, // search rule
-          signal: 3
-        }))*/
       })
     }
   }
@@ -237,6 +233,7 @@ function start (pattern: string) {
   stepExec = generator(pattern)
   stepExec.next()
 }
+
 /**
  * restart sequence
  * @param pattern 
