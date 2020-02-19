@@ -19,7 +19,6 @@ let status: string
 // movieId = STRING
 // 0: pause, 1: step
 var step = 0
-var experienceStep = 0
 
 const HttpServer = _createHttpServer((request: Http.IncomingMessage, response: Http.ServerResponse) => {
   log(`Request to: ${request.url}.`)
@@ -90,25 +89,12 @@ function wsRoute (payload: any, connection?: any) {
       log(`movie stop: movieId=${payload.movieId} is stop.`)
       stepExec.next()
       break
-    case fromCliSignal.CLI_SEARCH_EXPERIENCE:
-      let experienceSetting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', status, 'changeExperience.json')).toString())
-      log(`experience filtering: movieId=${payload.movieId}`)
-      WebSocketServer.connections.forEach(connection => {
-        connection.send(JSON.stringify(experienceSetting[experienceStep]))
-      })
-      log(experienceSetting[experienceStep])
-      experienceStep++
-      if(experienceStep >= experienceSetting.length)
-        experienceStep = 0
-      stepExec.next()
-      break
   }
 
   log(`Connecting Device List`)
   log(WebSocketServer.connections.map(con => remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)))
 }
 
-// signal 2: all clear, 3: control
 function * generator (dir: string) {
   while(true){
     let setting = JSON.parse(fs.readFileSync(resolve(process.cwd(), 'sequences', dir, 'timeline.json')).toString())
@@ -120,7 +106,6 @@ function * generator (dir: string) {
     step = step + 1
     if(!(step < setting.length)){
       step = 0
-      experienceStep = 0
       log('loop')
       WebSocketServer.connections.forEach(connection => {
         connection.send(JSON.stringify({
@@ -130,7 +115,6 @@ function * generator (dir: string) {
     }
   }
 }
-
 
 // -----------------------------------------------------
 // @note 以下の関数、副作用があるので移動するべからず
@@ -144,7 +128,6 @@ function httpHandle ({request, response, path, data}) {
      */
     case '/start':  // 全て再生位置を0に; そしてステップを初めからスタート
       step = 0
-      experienceStep = 0
       com = { signal: toCliSignal.SEEK_INIT }
       stepExec = generator(prod)
       stepExec.next()
@@ -164,7 +147,6 @@ function httpHandle ({request, response, path, data}) {
     case '/return': // startの原点復帰のみバージョン
       log(`原点復帰`)
       step = 0
-      experienceStep = 0
       com = {signal: toCliSignal.SEEK_INIT}
       res = `原点復帰 ok`
       break
