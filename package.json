@@ -1,7 +1,7 @@
 {
   "name": "code-server-module-whom",
   "version": "0.0.1",
-  "description": "code server for </module/Whom>",
+  "description": "code server for 《/module/Whom》",
   "scripts": {
     "listen": "npx forever start dst/index.js",
     "log": "npx forever logs dst/index.js",

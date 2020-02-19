@@ -1,0 +1,177 @@
+[
+  {
+    "movieId": "5",
+    "signal": 1,
+    "time": 6
+  },
+  {
+    "movieId": "5",
+    "signal": 0,
+    "time": 57
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 267
+  },
+  {
+    "movieId": "5",
+    "signal": 0,
+    "time": 75
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 308
+  },
+  {
+    "movieId": "0",
+    "signal": 0,
+    "time": 80
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 336
+  },
+  {
+    "movieId": "0",
+    "signal": 0,
+    "time": 173
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 350
+  },
+  {
+    "movieId": "5",
+    "signal": 0,
+    "time": 175
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 414
+  },
+  {
+    "movieId": "7",
+    "signal": 1,
+    "time": 5
+  },
+  {
+    "movieId": "7",
+    "signal": 0,
+    "time": 195
+  },
+  {
+    "movieId": "8",
+    "signal": 1,
+    "time": 140
+  },
+  {
+    "movieId": "8",
+    "signal": 0,
+    "time": 176
+  },
+  {
+    "movieId": "0",
+    "signal": 1,
+    "time": 328
+  },
+  {
+    "movieId": "0",
+    "signal": 0,
+    "time": 349
+  },
+  {
+    "movieId": "8",
+    "signal": 0,
+    "time": 298
+  },
+  {
+    "movieId": "7",
+    "signal": 0,
+    "time": 324
+  },
+  {
+    "movieId": "8",
+    "signal": 0,
+    "time": 360
+  },
+  {
+    "movieId": "7",
+    "signal": 0,
+    "time": 374
+  },
+  {
+    "movieId": "3",
+    "signal": 1,
+    "time": 5
+  },
+  {
+    "movieId": "3",
+    "signal": 0,
+    "time": 48
+  },
+  {
+    "movieId": "4",
+    "signal": 1,
+    "time": 61
+  },
+  {
+    "movieId": "4",
+    "signal": 1,
+    "time": 122
+  },
+  {
+    "movieId": "4",
+    "signal": 1,
+    "time": 146
+  },
+  {
+    "movieId": "4",
+    "signal": 0,
+    "time": 236
+  },
+  {
+    "movieId": "3",
+    "signal": 0,
+    "time": 268
+  },
+  {
+    "movieId": "1",
+    "signal": 1,
+    "time": 5
+  },
+  {
+    "movieId": "1",
+    "signal": 0,
+    "time": 61
+  },
+  {
+    "movieId": "2",
+    "signal": 1,
+    "time": 70
+  },
+  {
+    "movieId": "2",
+    "signal": 1,
+    "time": 148
+  },
+  {
+    "movieId": "2",
+    "signal": 1,
+    "time": 153
+  },
+  {
+    "movieId": "2",
+    "signal": 1,
+    "time": 160
+  },
+  {
+    "movieId": "2",
+    "signal": 0,
+    "time": 341
+  }
+]
