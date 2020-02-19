@@ -1,6 +1,6 @@
 /// <reference path="./types/index.d.ts" />
 
-import {createServer as _createHttpServer} from 'http'
+import Http, {createServer as _createHttpServer} from 'http'
 import {server as _webSocketServer} from 'websocket'
 
 import fs from  'fs'
@@ -8,7 +8,7 @@ import {resolve} from 'path'
 
 import {remoteAddrToMovieId, toCliSignal, fromCliSignal} from './resolver'
 import {log} from './util'
-import * as websocketHandler from './handler/websocket'
+import {close} from './handler/websocket'
 
 import {test, prod} from './setting'
 
@@ -21,13 +21,19 @@ let status: string
 var step = 0
 var experienceStep = 0
 
-const HttpServer = _createHttpServer((request, response) => {
+const HttpServer = _createHttpServer((request: Http.IncomingMessage, response: Http.ServerResponse) => {
   log(`Request to: ${request.url}.`)
   const [path, option] = (request.url as string).split('?')
   try{
     // *?KEY=VALUE&... をオブジェクトに
-    const data = Object.assign({}, ...option.split('&').map(v => ({[v.split('=')[0]]: v.split('=')[1]})))
-    httpHandle({request, response, path, data})
+    const data: any = Object.assign({}, ...option.split('&').map(v => ({[v.split('=')[0]]: v.split('=')[1]})))
+    const payload = {
+      request, 
+      response, 
+      path, 
+      data
+    }
+    httpHandle(payload)
   } catch(e) {
     log(`!!! Invalid option format !!!`)
     log(`Valid option format: HOST/?[KEY]=[VALUE]& ...`)
@@ -64,7 +70,7 @@ WebSocketServer.on('request', function (request) {
 
     wsRoute(payload, connection)
   })
-  connection.on('close', websocketHandler.close)
+  connection.on('close', close)
 })
 
 function wsRoute (payload: any, connection?: any) {
@@ -129,7 +135,7 @@ function * generator (dir: string) {
 // -----------------------------------------------------
 // @note 以下の関数、副作用があるので移動するべからず
 
-function httpHandle ({request, response, path, data}: HTTPHandler) {
+function httpHandle ({request, response, path, data}) {
   let com: any
   let res: string = ''
   switch (path) {

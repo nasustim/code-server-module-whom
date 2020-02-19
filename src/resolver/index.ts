@@ -1,3 +1,4 @@
+/// <reference path="./../types/index.d.ts" />
 
 export const remoteAddrToMovieId = (remoteAddr: string, connectedDevices: ConnectedDevices) => 
   connectedDevices.find(con => con.addr === remoteAddr)
@@ -10,7 +11,7 @@ export const toCliSignal = {
   SEEK_PAUSE: 4,
   SEEK_PLAY: 5,
   SET_SEEK_TIME: 6,
-  NONE: 404,
+  NONE: 202,
 }
 export const fromCliSignal = {
   SET_DEVICE: 0,
