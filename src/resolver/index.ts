@@ -10,6 +10,7 @@ export const toCliSignal = {
   SEEK_PAUSE: 4,
   SEEK_PLAY: 5,
   SET_SEEK_TIME: 6,
+  NONE: 404,
 }
 export const fromCliSignal = {
   SET_DEVICE: 0,
