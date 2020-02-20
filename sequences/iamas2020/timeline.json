@@ -11,7 +11,37 @@
   {
     "movieId": "5",
     "signal": 0,
-    "time": 57
+    "time": 10
+  },
+  {
+    "movieId": "6", 
+    "rule": {
+      "誰が": "*"
+    },
+    "signal": 1,
+    "time": 6
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 10
+  },
+
+  {
+    "movieId": "5",
+    "signal": 0,
+    "time": 20
+  },
+  {
+    "movieId": "6",
+    "signal": 0,
+    "time": 30
+  },
+
+  {
+    "movieId": "5",
+    "signal": 0,
+    "time": 30
   },
   {
     "movieId": "6",

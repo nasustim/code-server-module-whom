@@ -21,22 +21,24 @@ let status: string
 var step = 0
 
 const HttpServer = _createHttpServer((request: Http.IncomingMessage, response: Http.ServerResponse) => {
-  log(`Request to: ${request.url}.`)
   const [path, option] = (request.url as string).split('?')
-  try{
-    // *?KEY=VALUE&... をオブジェクトに
-    const data: any = Object.assign({}, ...option.split('&').map(v => ({[v.split('=')[0]]: v.split('=')[1]})))
-    const payload = {
-      request, 
-      response, 
-      path, 
-      data
-    }
-    httpHandle(payload)
-  } catch(e) {
-    log(`!!! Invalid option format !!!`)
-    log(`Valid option format: HOST/?[KEY]=[VALUE]& ...`)
+
+  // *?KEY=VALUE&... をオブジェクトに
+  const data: any = typeof option != 'undefined' ?  Object.assign({}, ...option.split('&').map(v => ({[v.split('=')[0]]: v.split('=')[1]}))) : {}
+
+  log(`req to`)
+  log(path)
+  log(`data`)
+  log(data)
+
+  const payload = {
+    request, 
+    response, 
+    path, 
+    data
   }
+  httpHandle(payload)
+    
 })
 
 console.log('######################################')
