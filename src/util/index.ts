@@ -13,3 +13,8 @@ export const setTimeStamp = (msg: DisplayableData): string => {
   let date = new Date()
   return `${date.getFullYear()}/${('00'+date.getMonth()).slice(-2)}/${('00'+date.getDate()).slice(-2)}-${('00'+date.getHours()).slice(-2)}:${('00'+date.getMinutes()).slice(-2)}:${('00'+date.getSeconds()).slice(-2)}: ${msg}`
 }
+
+export const initialControlData = {
+  time: 0,
+  movieId: '9'
+}

@@ -8,7 +8,8 @@
     "stop": "npx forever stop dst/index.js",
     "build": "npx tsc",
     "start": "npx ts-node src/index.ts",
-    "test": "npx tsc && exit 0"
+    "test": "npx tsc && exit 0",
+    "clean": "rm -fr ./dst"
   },
   "main": "dst/index.js",
   "repository": "https://github.com/nasustim/code-server-module-whom.git",
