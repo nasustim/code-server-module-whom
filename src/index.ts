@@ -65,9 +65,9 @@ const HttpServer = _createHttpServer((request, response) => {
       response.write(
         `connection list
         ${
-          WebSocketServer.connections.map(con => 
+          JSON.stringify(WebSocketServer.connections.map(con => 
             remoteAddrToMovieId(con.socket.remoteAddress as string, connectedDevices)
-          )
+          ))
         }`
       )
       break
